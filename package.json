@@ -1,7 +1,7 @@
 {
-  "name": "chrome-extension-boilerplate-react-vite",
+  "name": "booking",
   "version": "0.0.1",
-  "description": "chrome extension boilerplate",
+  "description": "auto click",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -17,6 +17,8 @@
   },
   "type": "module",
   "dependencies": {
+    "antd": "^5.8.3",
+    "dayjs": "^1.11.9",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },

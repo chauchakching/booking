@@ -1,37 +1,53 @@
 import React from "react";
-import logo from "@assets/img/logo.svg";
+import type { Dayjs } from "dayjs";
 import "@pages/popup/Popup.css";
 import useStorage from "@src/shared/hooks/useStorage";
-import exampleThemeStorage from "@src/shared/storages/exampleThemeStorage";
 import withSuspense from "@src/shared/hoc/withSuspense";
+import { Input, Radio, Space, TimePicker } from "antd";
+import { configStorage } from "@src/shared/storages/configStorage";
+import dayjs from "dayjs";
 
 const Popup = () => {
-  const theme = useStorage(exampleThemeStorage);
+  const config = useStorage(configStorage);
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p className="text-lime-400">
-          Edit <code>src/pages/popup/Popup.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React!
-        </a>
-        <button
-          style={{
-            color: theme === "light" ? "#fff" : "#000",
+      <Space>
+        <p>Auto click in:</p>
+        <Radio.Group
+          value={config.autoClickCountdownType}
+          onChange={(x) => {
+            configStorage.setConfig("autoClickCountdownType", x.target.value);
           }}
-          onClick={exampleThemeStorage.toggle}
         >
-          Toggle theme: [{theme}]
-        </button>
-      </header>
+          <Space direction="vertical" align="start">
+            <Radio value={"date"}>
+              <TimePicker
+                format="HH:mm"
+                value={dayjs(config.autoClickTime)}
+                onChange={(x: Dayjs) => {
+                  configStorage.setConfig("autoClickTime", x.valueOf());
+                }}
+              />
+            </Radio>
+            <Radio value={"ms"}>
+              <Space direction="horizontal">
+                <Input
+                  value={config.autoClickInSeconds}
+                  onChange={(e) => {
+                    configStorage.setConfig(
+                      "autoClickInSeconds",
+                      Number(e.target.value)
+                    );
+                  }}
+                  style={{ width: 50 }}
+                />
+                seconds
+              </Space>
+            </Radio>
+          </Space>
+        </Radio.Group>
+      </Space>
     </div>
   );
 };
