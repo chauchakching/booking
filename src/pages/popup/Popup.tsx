@@ -28,6 +28,7 @@ const Popup = () => {
                 onChange={(x: Dayjs) => {
                   configStorage.setConfig("autoClickTime", x.valueOf());
                 }}
+                allowClear={false}
               />
             </Radio>
             <Radio value={"ms"}>
