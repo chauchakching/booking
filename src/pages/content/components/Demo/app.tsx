@@ -1,3 +1,4 @@
+import { usePreciseTimeout } from "@src/shared/hooks/usePreciseTimeout";
 import useStorage from "@src/shared/hooks/useStorage";
 import { configStorage } from "@src/shared/storages/configStorage";
 import dayjs from "dayjs";
@@ -16,7 +17,6 @@ const checkAllAncestors = (event, check, cb) => {
   }
 };
 
-let delayedClickTimer = null;
 let selectedDom = null;
 
 /**
@@ -43,6 +43,8 @@ function App() {
   const { autoClickCountdownType, autoClickTime, autoClickInSeconds } =
     useStorage(configStorage);
 
+  const setPreciseTimeout = usePreciseTimeout();
+
   useEffect(() => {
     const cb = function (event) {
       if (!enableClickInterceptorRef.current) {
@@ -59,10 +61,6 @@ function App() {
             event.stopImmediatePropagation();
 
             console.log("intercepted click");
-
-            if (delayedClickTimer) {
-              clearTimeout(delayedClickTimer);
-            }
 
             const isClickingSameSlot = selectedDom === event.target;
 
@@ -98,17 +96,21 @@ function App() {
               dayjs().add(autoClickDelayTime, "ms").format(dateFormat)
             );
 
-            delayedClickTimer = setTimeout(() => {
-              console.log(
-                "setTimeout trigger click!",
-                dayjs().format(dateFormat)
-              );
-              enableClickInterceptorRef.current = false;
-              event.target.click();
-              setTimeout(() => {
-                enableClickInterceptorRef.current = true;
-              }, 0);
-            }, autoClickDelayTime);
+            setPreciseTimeout({
+              callback: () => {
+                console.log(
+                  "setTimeout trigger click!",
+                  dayjs().format(dateFormat)
+                );
+                enableClickInterceptorRef.current = false;
+                event.target.click();
+                setTimeout(() => {
+                  enableClickInterceptorRef.current = true;
+                }, 0);
+              },
+              delay: autoClickDelayTime,
+              refreshInterval: 1 * 1000,
+            });
 
             /**
              * update selected DOM
